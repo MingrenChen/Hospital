@@ -8,6 +8,7 @@ class Patient:
     """
     A single patient.
     """
+    __hash__ = object.__hash__
 
     def __init__(self, name, sex, age, id_):
         self.name = name
@@ -16,6 +17,9 @@ class Patient:
         self.phone = set()
         self.history = []
         self.age = age
+
+    def __repr__(self):
+        return "{}: {}, age {}".format(self.name, self.sex, self.age)
 
     def set_phone(self, phone):
         """
@@ -28,7 +32,8 @@ class Patient:
         self.phone.add(phone)
 
     def __eq__(self, other):
-        return self.name == other.name and self.id_ == other.id_
+        return self.name == other.name and self.age == other.age and\
+               self.sex == other.sex and self.id_ == other.id_
 
 
 class Histroy:
@@ -55,9 +60,9 @@ class PatientsList:
     """
     A collections contains all the patient.
     """
+
     def __init__(self):
         path = r"D:\\"
-        self.num = 0
         if "saved.p" not in os.listdir(path):
             self.PatientList = []
             save = open(os.path.join(path, 'saved.p'), 'wb')
@@ -68,18 +73,32 @@ class PatientsList:
             self.PatientList = pickle.load(save)
             save.close()
 
-    def add(self, patient):
+    def new(self, name, sex, age):
         """
-        add a patient
+
+        :param name:
+        :type name:
+        :param sex:
+        :type sex:
+        :param age:
+        :type age:
+        :return:
+        :rtype:
+        """
+        length = len(self.PatientList)
+        self.PatientList.append(Patient(name, sex, age, length + 1))
+        self.save()
+
+    def remove(self, patient):
+        """
+        remove a patient
         :param patient:
         :type patient:
         :return:
         :rtype:
         """
-        self.PatientList.append(patient)
-        print(self.PatientList)
-        self.num += 1
-        self.save()
+        self.PatientList.remove(patient)
+
 
     def save(self):
         """
@@ -90,3 +109,9 @@ class PatientsList:
         save = open(os.path.join(r"D:\\", 'saved.p'), 'wb')
         pickle.dump(self.PatientList, save)
         save.close()
+
+    def __repr__(self):
+        return str(self.PatientList)
+
+    def __str__(self):
+        return str(self.PatientList)
